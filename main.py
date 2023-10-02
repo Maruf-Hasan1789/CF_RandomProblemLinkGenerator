@@ -48,3 +48,8 @@ unsolvedProblemsId=problemLinkGeneratorfunc(tags,ratingsDict,userHandle)
 randomProblemId=rng.choice(unsolvedProblemsId, size=numOfProblems, replace=False)
 
 print(randomProblemId)
+
+with open("ProblemSet.txt", "w") as file:
+    file.write('\n'.join(map(str, randomProblemId)))
+
+a=input("Enter any key to exit")
