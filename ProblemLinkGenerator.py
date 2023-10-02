@@ -1,40 +1,45 @@
 import requests
-
-tags=["2-sat","binary search","bitmasks","brute force","chinese remainder theorem",
-      "combinatorics","constructive algorithms","data structures","dfs and similar",
-      "divide and conquer","dp","dsu","expression parsing","fft","flows","games","geometry",
-      "graph matchings","graphs","greedy","hashing","implementation","interactive","math","matrices",
-      "meet-in-the-middle","number theory","probabilities","schedules","shortest paths","sortings",
-      "string suffix structures","strings","ternary search","trees","two pointers"
-]
-
-ratingsDict={1400:True,1500:True,1600:True,1700:True}
-
-
-requestpath="https://codeforces.com/api/problemset.problems?tags="
+from UserSubmissionGenerator import userSubmissionGeneratorFunc
 
 
 
-#print(requestpath)
-r=requests.get(requestpath+"binary search")
 
+def tagSpecificProblemLink(ratingsDict,userHandle,tag):
+    requestpath = "https://codeforces.com/api/problemset.problems?tags="
 
-jsonObject=r.json()
-#print(jsonObject['result']['problems'])
+    r = requests.get(requestpath + tag)
 
-allProblems=jsonObject['result']['problems']
+    jsonObject = r.json()
 
-cnt=0
-for problem in allProblems:
-    key='rating'
-    if key not in problem:
-        continue
-    rating=problem['rating']
-    ratingKey=rating
-    if(ratingKey not in ratingsDict):
+    allProblems = jsonObject['result']['problems']
+    acceptedProblemDict = userSubmissionGeneratorFunc(userHandle)
+    cnt = 0
+    unsolvedProblemId = []
+    for problem in allProblems:
+        key = 'rating'
+        if key not in problem:
             continue
-    if(ratingsDict[rating]==True):
-        print(problem['contestId']," ",problem['index'])
-        cnt+=1
+        rating = problem['rating']
+        ratingKey = rating
+        if (ratingKey not in ratingsDict):
+            continue
+        problemId = str(problem['contestId']) + str(problem['index'])
+
+        if (ratingsDict[rating] == True and problemId not in acceptedProblemDict):
+            unsolvedProblemId.append(problemId)
+            # print(problemId)
+            cnt += 1
+
+    return unsolvedProblemId
 
 
+
+
+def problemLinkGeneratorfunc(tags,ratingsDict,userHandle):
+
+   unsolveProblems = []
+   for tag in tags:
+
+        unsolveProblemsTagspecific=tagSpecificProblemLink(ratingsDict,userHandle,"binary search")
+        unsolveProblems.extend(unsolveProblemsTagspecific)
+   return unsolveProblems
